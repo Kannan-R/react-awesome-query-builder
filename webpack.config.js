@@ -1,7 +1,6 @@
 var webpack = require('webpack');
 
 var plugins = [
-    new webpack.optimize.OccurenceOrderPlugin(),
     new webpack.DefinePlugin({
         'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV)
     })
@@ -22,11 +21,12 @@ if (process.env.COMPRESS) {
 }
 
 module.exports = {
+    entry: './index',
     output: {
         library: 'ReactQueryBuilder',
         libraryTarget: 'umd'
     },
-    _externals: [{
+    externals: [{
         react: {
             root: 'React',
             commonjs2: 'react',
@@ -41,7 +41,7 @@ module.exports = {
         }
     }],
     module: {
-        loaders: [
+        rules: [
             {
                 test: /\.jsx?$/,
                 loaders: ['babel-loader'],
@@ -49,21 +49,52 @@ module.exports = {
             },
             {
                 test: /\.css$/,
-                loader: "style!css"
+                loader: "style-loader"
             },
             {
                 test: /\.scss$/,
-                loader: "style!css!sass"
+                use: [
+                    {
+                      loader: "style-loader" // creates style nodes from JS strings
+                    },
+                    {
+                      loader: "css-loader" // translates CSS into CommonJS
+                    },
+                    {
+                      loader: "sass-loader" // compiles Sass to CSS
+                    }
+                  ]
             },
             {
                 test: /\.less$/,
-                loader: "style!css!less"
-            }
+                use: [
+                    {
+                      loader: "style-loader" // creates style nodes from JS strings
+                    },
+                    {
+                      loader: "css-loader" // translates CSS into CommonJS
+                    },
+                    {
+                      loader: "less-loader", // compiles Sass to CSS
+                      options: {
+                        modifyVars: {
+                            '@primary-color': '#00ADEF',
+                            '@link-color': '#0065CD',
+                            '@border-radius-base': '2px',
+                            '@font-size-base': '14px',
+                            '@line-height-base': '1.2',
+                            '@card-actions-background': '#f5f8fa',
+                        },
+                        javascriptEnabled: true,
+                      },
+                    }
+                ],
+            },
         ],
     },
     resolve: {
-        extensions: ['', '.js'],
-        modulesDirectories: [
+        extensions: ['*', '.js'],
+        modules: [
             'node_modules',
             __dirname,
             __dirname + '/node_modules',

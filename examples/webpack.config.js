@@ -8,30 +8,77 @@ module.exports = {
         path: __dirname,
         filename: 'bundle.js'
     },
-    resolveLoader: {
-        modulesDirectories: ['node_modules']
-    },
     resolve: {
-        extensions: ['', '.js']
+        extensions: ['*', '.js'],
+        modules: ['node_modules'],
     },
     module: {
         loaders: [
             {
                 test: /\.js$/,
-                loaders: ['babel-loader'],
+                //loaders: ['react-hot-loader/webpack', 'babel-loader?presets[]=react'],
+                use: [
+                    {
+                      loader: "react-hot-loader/webpack" // creates style nodes from JS strings
+                    },
+                    {
+                      loader: "babel-loader?presets[]=react" // translates CSS into CommonJS
+                    }
+                  ],
                 exclude: /node_modules/
             },
             {
                 test: /\.css$/,
-                loader: "style!css"
+                use: [
+                    {
+                      loader: "style-loader" // creates style nodes from JS strings
+                    },
+                    {
+                      loader: "css-loader" // translates CSS into CommonJS
+                    },
+                    {
+                      loader: "sass-loader" // compiles Sass to CSS
+                    }
+                  ]
             },
             {
                 test: /\.scss$/,
-                loader: "style!css!sass"
+                use: [
+                    {
+                      loader: "style-loader" // creates style nodes from JS strings
+                    },
+                    {
+                      loader: "css-loader" // translates CSS into CommonJS
+                    },
+                    {
+                      loader: "sass-loader" // compiles Sass to CSS
+                    }
+                  ]
             },
             {
                 test: /\.less$/,
-                loader: "style!css!less"
+                use: [
+                    {
+                      loader: "style-loader" // creates style nodes from JS strings
+                    },
+                    {
+                      loader: "css-loader" // translates CSS into CommonJS
+                    },
+                    {
+                      loader: "less-loader", // compiles Sass to CSS
+                      options: {
+                        modifyVars: {
+                            '@primary-color': '#00ADEF',
+                            '@link-color': '#0065CD',
+                            '@border-radius-base': '2px',
+                            '@font-size-base': '14px',
+                            '@line-height-base': '1.2',
+                            '@card-actions-background': '#f5f8fa',
+                        },
+                        javascriptEnabled: true,
+                      },
+                    }
+                ],
             },
             {
                 test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
@@ -51,4 +98,4 @@ module.exports = {
             }
         ),
     ]
-};
+}
