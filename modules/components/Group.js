@@ -138,6 +138,7 @@ class Group extends Component {
   renderChildren = () => {
     let props = this.props;
     return props.children1 ? props.children1.map((item) => (
+      <React.Fragment>
       <Item
         key={item.get('id')}
         id={item.get('id')}
@@ -152,6 +153,23 @@ class Group extends Component {
         treeNodesCnt={props.treeNodesCnt}
         onDragStart={props.onDragStart}
       />
+        {this.props.children1.size > 1 && <div 
+          style = 
+          {
+              {   
+                  marginTop: '5px',
+                  width: '80px',
+                  height: '20px',
+                  background: '#fff',
+                  borderRadius: '5px',
+              }
+          }
+          className="conjunctionCont"
+          >
+              {props.conjunctionOptions.AND.checked && <span>AND</span>}
+              {props.conjunctionOptions.OR.checked && <span>OR</span>}
+        </div>}
+      </React.Fragment>
     )).toList() : null;
   }
 
@@ -218,7 +236,6 @@ class Group extends Component {
         width: this.props.dragging.w
       };
     }
-
     return (
       <div
         className={classNames("group", "group-or-rule",
