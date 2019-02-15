@@ -54,6 +54,10 @@ export default {
                     type: 'text',
                     tableName: 't1',
                     operators: ['equal'],
+                    test: 'true',
+                    validationRules: {
+                        check_empty: true,
+                    }
                 },
                 prox1: {
                     label: 'prox1',
@@ -101,6 +105,9 @@ export default {
                 "is_empty",
                 "is_not_empty",
             ],
+            validationRules: {
+                check_empty: true,
+            }
         },
         slider: {
             label: 'Slider',
@@ -140,8 +147,12 @@ export default {
         date: {
             label: 'Date',
             type: 'date',
-            operators: ['greater', 'less'],
+            operators: ['greater', 'less','between'],
             defaultOperator: 'less',
+            validationRules: {
+                check_empty: true,
+                check_range: true,
+            }
         },
         time: {
             label: 'Time',

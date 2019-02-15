@@ -13,6 +13,7 @@ const MenuItem = Menu.Item;
 const DropdownButton = Dropdown.Button;
 import {getFieldConfig, getFieldPath, getFieldPathLabels, getOperatorConfig, getFieldWidgetConfig} from "../utils/configUtils";
 import size from 'lodash/size';
+import _ from 'lodash';
 var stringify = require('json-stringify-safe');
 const classNames = require('classnames');
 import PureRenderMixin from 'react-addons-pure-render-mixin';
@@ -71,6 +72,34 @@ class Rule extends Component {
       return renderType;
     }
 
+    validatePropVal = (valueList, type, rules, operatorConf) =>{
+        let hasError = false;
+        const values = valueList._tail ? valueList._tail.array : undefined;
+        let boolArr = [];
+        if(rules)
+        {
+            let dateArr = [];
+            _.each(values,(val)=>{
+                if(rules.check_empty)
+            {
+                boolArr.push((type === 'number' ? isNaN(val) : !val) || val.length == 0);
+            }
+            })
+            if(rules.check_range)
+            {
+                if(type === 'date' && operatorConf.label === 'Between' && values.length === 2)
+                {
+                    boolArr.push(Date.parse(values[1]) < Date.parse(values[0]));
+                }
+            }
+        }
+        console.log(type,values);
+        hasError = boolArr.includes(true);
+        if (!type || !values)
+            hasError = true;
+        return hasError;
+    }
+
     render () {
         let renderType = this.getRenderType(this.props);
         if (!renderType)
@@ -83,6 +112,7 @@ class Rule extends Component {
         const selectedOperatorConfig = getOperatorConfig(this.props.config, this.props.selectedOperator, this.props.selectedField);
         const selectedOperatorHasOptions = selectedOperatorConfig && selectedOperatorConfig.options != null;
         const selectedFieldWidgetConfig = getFieldWidgetConfig(this.props.config, this.props.selectedField, this.props.selectedOperator) || {};
+        const validationRules = selectedFieldConfig ? selectedFieldConfig.validationRules : undefined;
 
         let styles = {};
         if (renderType == 'dragging') {
@@ -93,11 +123,13 @@ class Rule extends Component {
             };
         }
 
+        const hasError = this.validatePropVal(this.props.value,selectedFieldConfig ? selectedFieldConfig.type: undefined, validationRules, selectedOperatorConfig ? selectedOperatorConfig : undefined);
+
         return (
             <div
                 className={classNames("rule", "group-or-rule",
                     renderType == 'placeholder' ? 'qb-placeholder' : null,
-                    renderType == 'dragging' ? 'qb-draggable' : null,
+                    renderType == 'dragging' ? 'qb-draggable' : null, "error",
                 )}
                 style={styles}
                 ref="rule"
@@ -186,6 +218,7 @@ class Rule extends Component {
                                 />
                             </Col>
                         }
+                        {validationRules && hasError && <Col className={classNames("error-info-container")}><div className={classNames("error-sub-container")}><Icon type="exclamation-circle" /><span>{validationRules.errorMessage ? validationRules.errorMessage : "Error!"}</span></div></Col>}
                     {/*</Row>*/}
                 {/*</div>*/}
             </div>
