@@ -43,6 +43,7 @@ class Rule extends Component {
         treeNodesCnt: PropTypes.number,
         //connected:
         dragging: PropTypes.object, //{id, x, y, w, h}
+        custom_props: PropTypes.object,
     };
 
     pureShouldComponentUpdate = PureRenderMixin.shouldComponentUpdate.bind(this);
@@ -72,32 +73,70 @@ class Rule extends Component {
       return renderType;
     }
 
-    validatePropVal = (valueList, type, rules, operatorConf) =>{
+    validatePropVal = (valueList, type, rules, operatorConf, overrideFunc) =>{
         let hasError = false;
         const values = valueList._tail ? valueList._tail.array : undefined;
         let boolArr = [];
-        if(rules)
+        let errorMessages = [];
+        if(rules && (!rules.bypass_empty_check && !rules.bypass_all_checks) || !rules)
+        {
+            _.each(values,(val)=>{
+                let errorFlag = (type === 'number' ? isNaN(val) : !val) || val.length == 0;
+                if(errorFlag)
+                {
+                    errorMessages.push(rules && rules.check_empty_message ? rules.check_empty_message : 'Value cannot be empty!')
+                }
+                boolArr.push(errorFlag);
+            })
+        }
+        if(rules && !rules.bypass_all_checks)
         {
             let dateArr = [];
-            _.each(values,(val)=>{
-                if(rules.check_empty)
-            {
-                boolArr.push((type === 'number' ? isNaN(val) : !val) || val.length == 0);
-            }
-            })
             if(rules.check_range)
             {
                 if(type === 'date' && operatorConf.label === 'Between' && values.length === 2)
                 {
-                    boolArr.push(Date.parse(values[1]) < Date.parse(values[0]));
+                    let errorFlag = Date.parse(values[1]) < Date.parse(values[0]);
+                    if(errorFlag)
+                    {
+                        errorMessages.push(rules && rules.check_range_message ? rules.check_range_message : 'Incorrect range!')
+                    }
+                    boolArr.push(errorFlag);
+                }
+                if(type === 'number' && operatorConf.label === 'Between' && values.length === 2)
+                {
+                    let errorFlag = values[1] < values[0];
+                    if(errorFlag)
+                    {
+                        errorMessages.push(rules && rules.check_range_message ? rules.check_range_message : 'Incorrect range!')
+                    }
+                    boolArr.push(errorFlag);
                 }
             }
         }
-        console.log(type,values);
+        //console.log(type,values);
         hasError = boolArr.includes(true);
-        if (!type || !values)
-            hasError = true;
-        return hasError;
+        // if (!type || !values)
+        //     hasError = true;
+        if(typeof overrideFunc == 'function')
+        {
+            let customFlag = overrideFunc(values, type, rules, operatorConf);
+            if(typeof customFlag == 'boolean')
+                {
+                    hasError = hasError || customFlag;
+                }
+            else
+                {
+                    if(customFlag.error_message)
+                    {
+                        errorMessages.push(customFlag.error_message);
+                        hasError = true;
+                    }
+                }
+        }
+            
+           // hasError = hasError && overrideFunc(valueList, type, rules, operatorConf);
+        return {error: hasError, message: _.uniq(errorMessages)};
     }
 
     render () {
@@ -113,6 +152,8 @@ class Rule extends Component {
         const selectedOperatorHasOptions = selectedOperatorConfig && selectedOperatorConfig.options != null;
         const selectedFieldWidgetConfig = getFieldWidgetConfig(this.props.config, this.props.selectedField, this.props.selectedOperator) || {};
         const validationRules = selectedFieldConfig ? selectedFieldConfig.validationRules : undefined;
+        let overrideValidationFn = selectedFieldConfig ? selectedFieldConfig.customValidation : undefined;
+        let errorMessage = undefined;
 
         let styles = {};
         if (renderType == 'dragging') {
@@ -123,13 +164,13 @@ class Rule extends Component {
             };
         }
 
-        const hasError = this.validatePropVal(this.props.value,selectedFieldConfig ? selectedFieldConfig.type: undefined, validationRules, selectedOperatorConfig ? selectedOperatorConfig : undefined);
-
+        const errorObj = this.validatePropVal(this.props.value,selectedFieldConfig ? selectedFieldConfig.type: undefined, validationRules, selectedOperatorConfig ? selectedOperatorConfig : undefined, overrideValidationFn);
+        errorMessage = errorObj.message.join(', ');
         return (
             <div
                 className={classNames("rule", "group-or-rule",
                     renderType == 'placeholder' ? 'qb-placeholder' : null,
-                    renderType == 'dragging' ? 'qb-draggable' : null, "error",
+                    renderType == 'dragging' ? 'qb-draggable' : null, errorObj.error ? "error": "",
                 )}
                 style={styles}
                 ref="rule"
@@ -203,6 +244,7 @@ class Rule extends Component {
                                   config={this.props.config}
                                   setValue={this.props.setValue}
                                   setValueSrc={this.props.setValueSrc}
+                                  custom_props={this.props.custom_props}
                                 />
                             </Col>
                         }
@@ -218,7 +260,7 @@ class Rule extends Component {
                                 />
                             </Col>
                         }
-                        {validationRules && hasError && <Col className={classNames("error-info-container")}><div className={classNames("error-sub-container")}><Icon type="exclamation-circle" /><span>{validationRules.errorMessage ? validationRules.errorMessage : "Error!"}</span></div></Col>}
+                        {errorObj.error && <Col className={classNames("error-info-container")}><div className={classNames("error-sub-container")}><Icon type="exclamation-circle" /><span>{errorMessage ? errorMessage : "Error!"}</span></div></Col>}
                     {/*</Row>*/}
                 {/*</div>*/}
             </div>

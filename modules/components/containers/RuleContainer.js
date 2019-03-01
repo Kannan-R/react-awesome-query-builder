@@ -24,6 +24,7 @@ export default (Rule) => {
       treeNodesCnt: PropTypes.number,
       //connected:
       //dragging: PropTypes.object, //{id, x, y, w, h}
+      custom_props: PropTypes.object,
     };
 
     constructor(props) {
@@ -116,6 +117,7 @@ export default (Rule) => {
               config={this.props.config}
               treeNodesCnt={this.props.treeNodesCnt}
               dragging={this.props.dragging}
+              custom_props={this.props.custom_props}
             />
           ), (
             <Rule
@@ -136,6 +138,7 @@ export default (Rule) => {
               treeNodesCnt={this.props.treeNodesCnt}
               onDragStart={this.props.onDragStart}
               dragging={this.props.dragging}
+              custom_props={this.props.custom_props}
             />
           )]}
         </div>

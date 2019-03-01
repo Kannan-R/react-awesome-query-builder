@@ -51,6 +51,7 @@ class Group extends Component {
     actions: PropTypes.object.isRequired,
     //connected:
     dragging: PropTypes.object, //{id, x, y, w, h}
+    custom_props: PropTypes.object,
   };
 
   pureShouldComponentUpdate = PureRenderMixin.shouldComponentUpdate.bind(this);
@@ -152,6 +153,7 @@ class Group extends Component {
         //tree={props.tree}
         treeNodesCnt={props.treeNodesCnt}
         onDragStart={props.onDragStart}
+        custom_props={props.custom_props}
       />
         {this.props.children1.size > 1 && <div 
           style = 

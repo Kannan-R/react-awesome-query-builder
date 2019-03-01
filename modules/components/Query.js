@@ -21,6 +21,7 @@ class ConnectedQuery extends Component {
         get_children: PropTypes.func,
         tree: PropTypes.instanceOf(Immutable.Map),
         //dispatch: PropTypes.func.isRequired,
+        custom_props: PropTypes.object,
     };
 
     constructor(props) {
@@ -76,7 +77,8 @@ class ConnectedQuery extends Component {
                 tree: this.validatedTree,
                 actions: this.actions,
                 config: config,
-                dispatch: dispatch
+                dispatch: dispatch,
+                custom_props: props.custom_props,
             })}
         </div>
     }
@@ -100,10 +102,10 @@ export default class Query extends Component {
         operators: PropTypes.object.isRequired,
         widgets: PropTypes.object.isRequired,
         settings: PropTypes.object.isRequired,
-
         onChange: PropTypes.func,
         get_children: PropTypes.func,
         value: PropTypes.instanceOf(Immutable.Map),
+        custom_props: PropTypes.object,
     };
 
     constructor(props, context) {
@@ -158,6 +160,7 @@ export default class Query extends Component {
                       get_children={get_children}
                       config={config}
                       onChange={onChange}
+                      custom_props={props.custom_props}
                     />
                 </Provider>
             </LocaleProvider>

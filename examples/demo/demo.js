@@ -113,6 +113,7 @@ export default class DemoQueryBuilder extends Component {
                     value={transit.fromJSON(initValueJSON)}
                     {...config_props} 
                     get_children={this.getChildren}
+                    custom_props={{test:true}}
                 > </Query>
             </div>
         );

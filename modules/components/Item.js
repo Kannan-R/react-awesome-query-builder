@@ -18,6 +18,7 @@ const typeMap = {
       treeNodesCnt={props.treeNodesCnt}
       config={props.config}
       onDragStart={props.onDragStart}
+      custom_props={props.custom_props}
     />
   ),
   group: (props) => (
@@ -31,6 +32,7 @@ const typeMap = {
       treeNodesCnt={props.treeNodesCnt}
       onDragStart={props.onDragStart}
       children1={props.children1}
+      custom_props={props.custom_props}
     />
   )
 };
@@ -48,6 +50,7 @@ class Item extends Component {
     actions: PropTypes.object.isRequired,
     treeNodesCnt: PropTypes.number,
     onDragStart: PropTypes.func,
+    custom_props: PropTypes.object,
   };
 
   pureShouldComponentUpdate = PureRenderMixin.shouldComponentUpdate.bind(this);

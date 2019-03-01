@@ -24,6 +24,7 @@ export default (Widget) => {
             //actions
             setValue: PropTypes.func,
             setValueSrc: PropTypes.func,
+            custom_props: PropTypes.object,
         };
 
         constructor(props) {
@@ -113,6 +114,7 @@ export default (Widget) => {
                 placeholders: valueLabels ? valueLabels.placeholder : null,
                 textSeparators: textSeparators,
                 setValue: this._getSetValueHandler(isSpecialRange, delta, widgetType),
+                custom_props: this.props.custom_props,
             });
             
             if (widget == 'field') {
@@ -176,7 +178,7 @@ export default (Widget) => {
             }
 
             return (
-                <Widget name={defaultWidget} config={this.props.config}>
+                <Widget name={defaultWidget} config={this.props.config} custom_props={this.props.custom_props}>
                     {range(0, cardinality).map(delta => {
                         const valueSources = getValueSourcesForFieldOp(this.props.config, this.props.field, this.props.operator);
                         let valueSrc = this.props.valueSrc.get(delta) || null;

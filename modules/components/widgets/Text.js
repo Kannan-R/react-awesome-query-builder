@@ -12,6 +12,7 @@ export default class TextWidget extends Component {
     value: PropTypes.string,
     field: PropTypes.string.isRequired,
     customProps: PropTypes.object,
+    custom_props: PropTypes.object,
   };
 
   shouldComponentUpdate = shallowCompare;

@@ -13,6 +13,7 @@ export default class Builder extends Component {
     config: PropTypes.object.isRequired,
     actions: PropTypes.object.isRequired,
     onDragStart: PropTypes.func,
+    custom_props: PropTypes.object,
   };
 
   constructor(props) {
@@ -47,6 +48,7 @@ export default class Builder extends Component {
         //tree={this.props.tree}
         treeNodesCnt={treeNodesCnt}
         onDragStart={this.props.onDragStart}
+        custom_props={this.props.custom_props}
       >
       </Item>
     );

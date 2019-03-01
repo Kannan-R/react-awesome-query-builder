@@ -21,6 +21,7 @@ export default (Group) => {
       children1: PropTypes.instanceOf(Immutable.OrderedMap),
       onDragStart: PropTypes.func,
       treeNodesCnt: PropTypes.number,
+      custom_props: PropTypes.object,
     };
 
     constructor(props) {
@@ -144,6 +145,7 @@ export default (Group) => {
               //tree={this.props.tree}
               treeNodesCnt={this.props.treeNodesCnt}
               dragging={this.props.dragging}
+              custom_props={this.props.custom_props}
             />
           ), (
             <Group
@@ -166,6 +168,7 @@ export default (Group) => {
               treeNodesCnt={this.props.treeNodesCnt}
               onDragStart={this.props.onDragStart}
               dragging={this.props.dragging}
+              custom_props={this.props.custom_props}
             />
           )]}
         </div>

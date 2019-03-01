@@ -57,7 +57,14 @@ export default {
                     test: 'true',
                     validationRules: {
                         check_empty: true,
-                    }
+                        //bypass_all_checks: true,
+                        check_empty_message: "Empty value machhaa!",
+                        check_range_message: "Incorrect range machhaa!",
+                    },
+                    // customValidation: (a,b,c, d) =>{
+                    //     console.log(a);
+                    //     return true;//{message: "Value cannot be empty"};
+                    // }
                 },
                 prox1: {
                     label: 'prox1',
@@ -107,6 +114,7 @@ export default {
             ],
             validationRules: {
                 check_empty: true,
+                check_range: true,
             }
         },
         slider: {
